@@ -1,5 +1,5 @@
 target_sources(iris
         PRIVATE
-        greeter.h
+        iris.hpp
         version.hpp
 )

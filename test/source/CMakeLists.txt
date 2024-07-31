@@ -1,5 +1,5 @@
 target_sources(iris-test
         PRIVATE
-        greeter.cpp
+        iris.cpp
         main.cpp
 )
