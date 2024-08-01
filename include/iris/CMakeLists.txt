@@ -1,5 +1,5 @@
 target_sources(iris
-        PRIVATE
-        iris.hpp
-        version.hpp
+  PRIVATE
+  iris.hpp
+  version.hpp
 )
