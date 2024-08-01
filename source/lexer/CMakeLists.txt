@@ -1,4 +1,4 @@
 target_sources(iris
   PRIVATE
-    Lexer.cpp
+  Lexer.cpp
 )

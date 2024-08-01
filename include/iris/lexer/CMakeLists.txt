@@ -1,4 +1,5 @@
 target_sources(iris
   PRIVATE
-    Lexer.hpp
+  Lexer.hpp
+  Scanner.hpp
 )
