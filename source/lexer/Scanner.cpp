@@ -13,9 +13,10 @@ Scanner::Scanner(std::string_view const buffer) : buffer_(buffer), current_(0) {
 
 auto Scanner::peek(std::size_t const amount) const -> char {
   if (current_ + amount >= buffer_.size()) {
-    throw std::out_of_range{fmt::format("{} : current_({}) + amount({}) >= buffer_.size({})",
+    return '\0';
+    /* throw std::out_of_range{fmt::format("{} : current_({}) + amount({}) >= buffer_.size({})",
                                         "Scanner::peek(std::size_t)", current_, amount,
-                                        buffer_.size())};
+                                        buffer_.size())}; */
   }
 
   return buffer_[current_ + amount];
@@ -24,7 +25,7 @@ auto Scanner::peek(std::size_t const amount) const -> char {
 auto Scanner::current() const -> char { return peek(0); }
 
 auto Scanner::advance(std::size_t amount) -> void {
-  for (; amount > 0; --amount) {
+  for (; amount > 0 && !is_eof(); --amount) {
     // Update position on new line
     if (current() == '\n') {
       ++position.line;

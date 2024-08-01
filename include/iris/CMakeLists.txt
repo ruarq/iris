@@ -5,4 +5,6 @@ target_sources(iris
   iris.hpp
   version.hpp
   SourceRange.hpp
+  Context.hpp
+  File.hpp
 )

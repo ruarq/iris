@@ -24,7 +24,6 @@ namespace iris::lexer {
   public:
     /**
      * @brief Peek ahead by a specific amount of characters.
-     * @throws std::out_of_range If the amount is out of range of the buffer
      * @param amount The amount of characters to peek ahead
      * @return The character @a amount characters ahead
      */

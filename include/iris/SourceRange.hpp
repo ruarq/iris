@@ -8,6 +8,8 @@
 #include <cstddef>
 #include <string_view>
 
+#include "Context.hpp"
+
 namespace iris {
   /**
    * @brief Represents a range of characters in a file
@@ -53,11 +55,25 @@ namespace iris {
     [[nodiscard]] auto literal(std::string_view buffer) const -> std::string_view;
 
     /**
-     * @brief "Add" or join two source range together.
+     * @brief Get the literal of the source range.
+     * @param context The context the source range belongs to
+     * @return A string view representing the literal of the source range
+     */
+    [[nodiscard]] auto literal(Context const &context) const -> std::string_view;
+
+    /**
+     * @brief "Add" or join two source ranges together.
      * @param other The other source range
      * @return The result of joining both source ranges together
      */
     [[nodiscard]] auto operator+(SourceRange const &other) const -> SourceRange;
+
+    /**
+     * @brief "Add" or join another source range into this one.
+     * @param other The other source range
+     * @return SourceRange &
+     */
+    auto operator+=(SourceRange const &other) -> SourceRange &;
 
     /**
      * @brief Compare two source ranges for equality

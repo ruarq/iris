@@ -29,8 +29,16 @@ auto SourceRange::literal(std::string_view const buffer) const -> std::string_vi
   return buffer.substr(offset, size);
 }
 
+auto SourceRange::literal(Context const& context) const -> std::string_view {
+  return literal(context.file.content());
+}
+
 auto SourceRange::operator+(SourceRange const& other) const -> SourceRange {
   return join(*this, other);
+}
+
+auto SourceRange::operator+=(SourceRange const& other) -> SourceRange& {
+  return *this = *this + other;
 }
 
 auto SourceRange::operator==(SourceRange const& other) const -> bool {
