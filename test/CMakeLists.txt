@@ -18,11 +18,11 @@ include(../cmake/CPM.cmake)
 CPMAddPackage("gh:doctest/doctest@2.4.9")
 CPMAddPackage("gh:TheLartians/Format.cmake@1.7.3")
 
-if(TEST_INSTALLED_VERSION)
+if (TEST_INSTALLED_VERSION)
   find_package(iris REQUIRED)
-else()
+else ()
   CPMAddPackage(NAME iris SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/..)
-endif()
+endif ()
 
 # ---- Create binary ----
 
@@ -30,17 +30,17 @@ add_executable(${PROJECT_NAME})
 add_subdirectory(source)
 
 target_link_libraries(${PROJECT_NAME} doctest::doctest iris::iris)
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
+set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 20)
 
 # enable compiler warnings
-if(NOT TEST_INSTALLED_VERSION)
-  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+if (NOT TEST_INSTALLED_VERSION)
+  if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     target_compile_options(iris PUBLIC -Wall -Wpedantic -Wextra -Werror)
-  elseif(MSVC)
+  elseif (MSVC)
     target_compile_options(iris PUBLIC /W4 /WX)
     target_compile_definitions(${PROJECT_NAME} PUBLIC DOCTEST_CONFIG_USE_STD_HEADERS)
-  endif()
-endif()
+  endif ()
+endif ()
 
 # ---- Add iris-test ----
 
@@ -55,7 +55,7 @@ doctest_discover_tests(${PROJECT_NAME})
 
 # ---- code coverage ----
 
-if(ENABLE_TEST_COVERAGE)
+if (ENABLE_TEST_COVERAGE)
   target_compile_options(iris PUBLIC -O0 -g -fprofile-arcs -ftest-coverage)
   target_link_options(iris PUBLIC -fprofile-arcs -ftest-coverage)
-endif()
+endif ()

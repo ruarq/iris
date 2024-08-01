@@ -5,10 +5,11 @@
 #ifndef IRIS_IRIS_HPP
 #define IRIS_IRIS_HPP
 
-#include <string_view>
+#include "Context.hpp"
+#include "lexer/Lexer.hpp"
 
 namespace iris {
-  [[nodiscard]] auto hello_world() -> std::string_view;
+  auto dump_tokens(Context &context) -> void;
 }
 
-#endif //IRIS_IRIS_HPP
+#endif  // IRIS_IRIS_HPP
