@@ -23,11 +23,24 @@ auto Scanner::peek(std::size_t const amount) const -> char {
 
 auto Scanner::current() const -> char { return peek(0); }
 
-auto Scanner::advance(std::size_t const amount) -> void { current_ += amount; }
+auto Scanner::advance(std::size_t amount) -> void {
+  for (; amount > 0; --amount) {
+    // Update position on new line
+    if (current() == '\n') {
+      ++position.line;
+      position.column = 0;
+    }
+
+    // Increment position
+    ++current_;
+    ++position.offset;
+    ++position.column;
+  }
+}
 
 auto Scanner::consume() -> char {
   auto const c = current();
-  ++current_;
+  advance();
   return c;
 }
 

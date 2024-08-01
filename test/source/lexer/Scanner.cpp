@@ -4,12 +4,14 @@
 
 #include <doctest/doctest.h>
 
+#include <iris/SourceRange.hpp>
 #include <iris/lexer/Scanner.hpp>
 #include <string_view>
 
+using namespace iris;
 using namespace iris::lexer;
 
-constexpr static std::string_view code = "fn main(): i32 { ret 0 }";
+constexpr static std::string_view code = "fn main(): i32 {\n\tret 0\n}\n";
 
 TEST_SUITE("Scanner") {
   TEST_CASE("is_eof") {
@@ -67,6 +69,38 @@ TEST_SUITE("Scanner") {
     REQUIRE(!scanner.is_eof());
     for (auto current : code) {
       CHECK_EQ(current, scanner.consume());
+    }
+  }
+
+  TEST_CASE("position") {
+    Scanner scanner{code};
+    REQUIRE(!scanner.is_eof());
+    REQUIRE_EQ(scanner.position, SourceRange{});
+
+    std::size_t line = 1;
+    std::size_t column = 1;
+
+    for (std::size_t i = 0; i < code.size(); ++i) {
+      CHECK_EQ(scanner.position.offset, i);
+      CHECK_EQ(scanner.position.size, 1);
+      CHECK_EQ(scanner.position.line, line);
+      CHECK_EQ(scanner.position.column, column);
+
+      if (code[i] == '\n') {
+        ++line;
+        column = 0;
+      }
+
+      ++column;
+
+      SUBCASE("literal") {
+        auto const literal = scanner.position.literal(code);
+
+        REQUIRE_EQ(literal.size(), 1);
+        CHECK_EQ(code[i], literal[0]);
+      }
+
+      scanner.advance();
     }
   }
 }

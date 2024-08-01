@@ -5,6 +5,7 @@
 #ifndef IRIS_LEXER_SCANNER_HPP
 #define IRIS_LEXER_SCANNER_HPP
 
+#include <iris/SourceRange.hpp>
 #include <string_view>
 
 namespace iris::lexer {
@@ -23,7 +24,7 @@ namespace iris::lexer {
   public:
     /**
      * @brief Peek ahead by a specific amount of characters.
-     * @throws std::out_of_range If the amount is out of range
+     * @throws std::out_of_range If the amount is out of range of the buffer
      * @param amount The amount of characters to peek ahead
      * @return The character @a amount characters ahead
      */
@@ -53,6 +54,9 @@ namespace iris::lexer {
      * @return false if the scanner did not reach the end of the buffer (yet)
      */
     [[nodiscard]] auto is_eof() const -> bool;
+
+  public:
+    SourceRange position;  ///< The current position of the scanner as SourceRange
 
   private:
     std::string_view buffer_;  ///< The buffer the scanner reads from
