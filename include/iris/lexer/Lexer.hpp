@@ -17,6 +17,13 @@ namespace iris::lexer {
   class Lexer {
   public:
     /**
+     * @brief Create a lexer for a context.
+     * @param context The context to create the lexer for
+     */
+    [[nodiscard]] static auto from(Context &context) -> Lexer;
+
+  public:
+    /**
      * @brief The minimum size we want the buffer to have when we refill it
      */
     constexpr static std::size_t buffer_fill_size = 1024;

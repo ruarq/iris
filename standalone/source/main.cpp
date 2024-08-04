@@ -3,16 +3,16 @@
 #include <iris/iris.hpp>
 #include <iris/version.hpp>
 
-auto main(int argc, char** argv) -> int {
+auto main(int const argc, char** argv) -> int {
   cxxopts::Options options("irisc", "Compiler for the iris programming language.");
   options.add_options()("h,help", "display this information");
-  auto result = options.parse(argc, argv);
+  auto const result = options.parse(argc, argv);
   if (result["help"].as<bool>()) {
     std::cout << options.help();
   }
 
   for (auto const& filename : result.unmatched()) {
-    auto ctx = iris::Context::create(filename);
+    auto ctx = iris::Context::from(filename);
     dump_tokens(ctx);
   }
 
