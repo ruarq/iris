@@ -46,9 +46,17 @@ namespace iris::ast {
   /**
    * @brief Describes the kind of a unary operation.
    */
-  enum class UnaryOp {
+  enum class UnaryOpKind {
     Not,  ///< Logical not (!)
     Neg,  ///< Unary minus, negation (-)
+  };
+
+  /**
+   * @brief Represents a unary operator.
+   */
+  struct UnaryOp {
+    SourceRange range;
+    UnaryOpKind kind;
   };
 
   /**
@@ -63,7 +71,7 @@ namespace iris::ast {
   /**
    * @brief Describes the kind of a binary operation.
    */
-  enum class BinaryOp {
+  enum class BinaryOpKind {
     /* ARITHMETIC */
 
     Add,  ///< Addition (+)
@@ -93,6 +101,14 @@ namespace iris::ast {
     BXor,  ///< Binary exclusive or (^)
     BLs,   ///< Binary left shift (<<)
     BRs,   ///< Binary right shift (>>)
+  };
+
+  /**
+   * @brief Represents a binary operator in the ast.
+   */
+  struct BinaryOp {
+    SourceRange range;
+    BinaryOpKind kind;
   };
 
   /**

@@ -13,19 +13,17 @@
 namespace iris::parser {
   class Parser {
   private:
-    [[nodiscard]] static auto to_binary_op(lexer::TokenKind kind) -> std::optional<ast::BinaryOp>;
-    [[nodiscard]] static auto to_unary_op(lexer::TokenKind kind) -> std::optional<ast::UnaryOp>;
+    [[nodiscard]] static auto to_unary_op(lexer::TokenKind kind) -> std::optional<ast::UnaryOpKind>;
 
   public:
     Parser(Context &context, lexer::Lexer &lexer);
 
   public:
     [[nodiscard]] auto parse_expr() -> ast::Expr;
-    [[nodiscard]] auto parse_binary_op() -> ast::BinaryOp;
-    [[nodiscard]] auto parse_binary_expr() -> ast::Expr;
+    [[nodiscard]] auto parse_binary_expr(std::size_t precedence = 0) -> ast::Expr;
     [[nodiscard]] auto parse_unary_op() -> ast::UnaryOp;
     [[nodiscard]] auto parse_unary_expr() -> ast::UnaryExpr;
-    [[nodiscard]] auto parse_term_expr() -> ast::Expr;
+    [[nodiscard]] auto parse_primary_expr() -> ast::Expr;
     [[nodiscard]] auto parse_value_expr() -> ast::ValueExpr;
     [[nodiscard]] auto parse_name_expr() -> ast::NameExpr;
 
@@ -47,6 +45,11 @@ namespace iris::parser {
     Context &ctx_;
     lexer::Lexer &lexer_;
   };
+
+  /**
+   * @brief Parse a context.
+   */
+  [[nodiscard]] auto parse(Context &context) -> ast::Expr;
 }  // namespace iris::parser
 
 #endif  // IRIS_PARSER_PARSER_HPP
