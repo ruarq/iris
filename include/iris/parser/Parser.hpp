@@ -13,8 +13,8 @@
 
 namespace iris::parser {
   enum class Binding {
-    Init = 0,
-    Assign,
+    Assign = 0,
+    Init = Assign,
     Or,
     And,
     Equality,
@@ -25,6 +25,7 @@ namespace iris::parser {
     BShift,
     Term,
     Factor,
+    Unary,
     Call,
     MemberSelect,
     Primary,
@@ -40,10 +41,15 @@ namespace iris::parser {
 
   struct ParseRule {
     using NudFn = std::function<ast::Expr(Parser *)>;
-    // using PrefixFn = std::function<ast::Expr(Parser *)>;
+    using PrefixFn = std::function<ast::Expr(Parser *, Binding)>;
     using LedFn = std::function<ast::Expr(Parser *, ast::Expr, Binding)>;
 
-    // PrefixFn prefix;
+    struct Prefix {
+      PrefixFn fn;
+      Binding binding;
+    };
+
+    std::optional<Prefix> prefix;
     NudFn nud;
     LedFn led;
     Binding binding;
@@ -81,7 +87,7 @@ namespace iris::parser {
 
     [[nodiscard]] auto parse_expr(Binding min_binding = Binding::Init) -> ast::Expr;
     [[nodiscard]] auto parse_nud() -> ast::Expr;
-    [[nodiscard]] auto parse_binary_op() -> ast::BinaryOp;
+    // [[nodiscard]] auto parse_binary_op() -> ast::BinaryOp;
     [[nodiscard]] auto parse_binary_expr(ast::Expr left, Binding min_binding) -> ast::Expr;
     [[nodiscard]] auto parse_member_select_expr(ast::Expr value, Binding min_binding) -> ast::Expr;
     [[nodiscard]] auto parse_assign_expr(ast::Expr target, Binding min_binding) -> ast::Expr;
@@ -90,7 +96,7 @@ namespace iris::parser {
     // [[nodiscard]] auto parse_binary_expr(ast::Expr left, std::size_t precedence = 0) ->
     // ast::Expr;
     [[nodiscard]] auto parse_unary_op() -> ast::UnaryOp;
-    [[nodiscard]] auto parse_unary_expr() -> ast::Expr;
+    [[nodiscard]] auto parse_unary_expr(Binding min_binding) -> ast::Expr;
     [[nodiscard]] auto parse_primary_expr() -> ast::Expr;
     [[nodiscard]] auto parse_value_expr() -> ast::ValueExpr;
     [[nodiscard]] auto parse_name_expr() -> ast::NameExpr;

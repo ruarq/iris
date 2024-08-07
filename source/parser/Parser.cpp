@@ -19,34 +19,57 @@ namespace iris::parser {
 
     // TODO(ruarq): Put this in a lookup table.
     static std::unordered_map<lexer::TokenKind, ParseRule> map{
-        {Identifier, {&Parser::parse_primary_expr, nullptr, Binding::Primary, None}},
-        {Lbool, {&Parser::parse_primary_expr, nullptr, Binding::Primary, None}},
-        {Lchar, {&Parser::parse_primary_expr, nullptr, Binding::Primary, None}},
-        {Lint, {&Parser::parse_primary_expr, nullptr, Binding::Primary, None}},
-        {Lfloat, {&Parser::parse_primary_expr, nullptr, Binding::Primary, None}},
-        {Lstr, {&Parser::parse_primary_expr, nullptr, Binding::Primary, None}},
-        {Plus, {nullptr, &Parser::parse_binary_expr, Binding::Term, Left}},
-        {Dash, {&Parser::parse_unary_expr, &Parser::parse_binary_expr, Binding::Term, Left}},
-        {Asterisk, {nullptr, &Parser::parse_binary_expr, Binding::Factor, Left}},
-        {Slash, {nullptr, &Parser::parse_binary_expr, Binding::Factor, Left}},
-        {Percent, {nullptr, &Parser::parse_binary_expr, Binding::Factor, Left}},
-        {Dot, {nullptr, &Parser::parse_member_select_expr, Binding::MemberSelect, Left}},
-        {LParen, {nullptr, &Parser::parse_call_expr, Binding::Call, Left}},
-        {BarBar, {nullptr, &Parser::parse_binary_expr, Binding::Or, Left}},
-        {AmpersandAmpersand, {nullptr, &Parser::parse_binary_expr, Binding::And, Left}},
-        {EqualEqual, {nullptr, &Parser::parse_binary_expr, Binding::Equality, Left}},
-        {ExclamEqual, {nullptr, &Parser::parse_binary_expr, Binding::Equality, Left}},
-        {Ampersand, {nullptr, &Parser::parse_binary_expr, Binding::BAnd, Left}},
-        {Bar, {nullptr, &Parser::parse_binary_expr, Binding::BOr, Left}},
-        {Caret, {nullptr, &Parser::parse_binary_expr, Binding::BXor, Left}},
-        {LAngle, {nullptr, &Parser::parse_binary_expr, Binding::Comparison, Left}},
-        {RAngle, {nullptr, &Parser::parse_binary_expr, Binding::Comparison, Left}},
-        {LAngleEqual, {nullptr, &Parser::parse_binary_expr, Binding::Comparison, Left}},
-        {RAngleEqual, {nullptr, &Parser::parse_binary_expr, Binding::Comparison, Left}},
-        {LAngleLAngle, {nullptr, &Parser::parse_binary_expr, Binding::BShift, Left}},
-        {RAngleRAngle, {nullptr, &Parser::parse_binary_expr, Binding::BShift, Left}},
-        {Equal, {nullptr, &Parser::parse_assign_expr, Binding::Assign, Right}},
-        {Exclam, {&Parser::parse_unary_expr, nullptr, Binding::Primary, None}},
+        {Identifier,
+         ParseRule{std::nullopt, &Parser::parse_primary_expr, nullptr, Binding::Primary, None}},
+        {Lbool,
+         ParseRule{std::nullopt, &Parser::parse_primary_expr, nullptr, Binding::Primary, None}},
+        {Lchar,
+         ParseRule{std::nullopt, &Parser::parse_primary_expr, nullptr, Binding::Primary, None}},
+        {Lint,
+         ParseRule{std::nullopt, &Parser::parse_primary_expr, nullptr, Binding::Primary, None}},
+        {Lfloat,
+         ParseRule{std::nullopt, &Parser::parse_primary_expr, nullptr, Binding::Primary, None}},
+        {Lstr,
+         ParseRule{std::nullopt, &Parser::parse_primary_expr, nullptr, Binding::Primary, None}},
+        {Plus, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::Term, Left}},
+        {Dash, ParseRule{ParseRule::Prefix{&Parser::parse_unary_expr, Binding::Unary}, nullptr,
+                         &Parser::parse_binary_expr, Binding::Term, Left}},
+        {Asterisk,
+         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::Factor, Left}},
+        {Slash,
+         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::Factor, Left}},
+        {Percent,
+         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::Factor, Left}},
+        {Dot, ParseRule{std::nullopt, nullptr, &Parser::parse_member_select_expr,
+                        Binding::MemberSelect, Left}},
+        {LParen, ParseRule{std::nullopt, nullptr, &Parser::parse_call_expr, Binding::Call, Left}},
+        {BarBar, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::Or, Left}},
+        {AmpersandAmpersand,
+         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::And, Left}},
+        {EqualEqual,
+         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::Equality, Left}},
+        {ExclamEqual,
+         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::Equality, Left}},
+        {Ampersand,
+         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::BAnd, Left}},
+        {Bar, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::BOr, Left}},
+        {Caret, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::BXor, Left}},
+        {LAngle,
+         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::Comparison, Left}},
+        {RAngle,
+         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::Comparison, Left}},
+        {LAngleEqual,
+         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::Comparison, Left}},
+        {RAngleEqual,
+         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::Comparison, Left}},
+        {LAngleLAngle,
+         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::BShift, Left}},
+        {RAngleRAngle,
+         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::BShift, Left}},
+        {Equal,
+         ParseRule{std::nullopt, nullptr, &Parser::parse_assign_expr, Binding::Assign, Right}},
+        {Exclam, ParseRule{ParseRule::Prefix{&Parser::parse_unary_expr, Binding::Unary}, nullptr,
+                           nullptr, Binding::Primary, None}},
     };
 
     if (map.contains(kind)) {
@@ -259,22 +282,32 @@ namespace iris::parser {
   auto Parser::parse_expr_stmt() -> ast::ExprStmt { return ast::ExprStmt{parse_expr()}; }
 
   auto Parser::parse_expr(Binding min_binding) -> ast::Expr {
+    auto token = lexer_.current();
+    auto rule = parse_rule(lexer_.current().kind);
+    if (!rule) {
+      error(token.range, "expected expression");
+    }
+
+    if (rule->prefix) {
+      return rule->prefix->fn(this, rule->prefix->binding);
+    }
+
     auto expr = parse_nud();
 
-    auto token = lexer_.current();
-    auto info = parse_rule(token.kind);
+    token = lexer_.current();
+    rule = parse_rule(token.kind);
 
-    while (info && info->led) {
-      if (info->binding > min_binding && info->associativity == Associativity::Left) {
-        expr = info->led(this, std::move(expr), info->binding);
-      } else if (info->binding >= min_binding && info->associativity == Associativity::Right) {
-        expr = info->led(this, std::move(expr), info->binding);
+    while (rule && rule->led) {
+      if (rule->binding > min_binding && rule->associativity == Associativity::Left) {
+        expr = rule->led(this, std::move(expr), rule->binding);
+      } else if (rule->binding == min_binding && rule->associativity == Associativity::Right) {
+        expr = rule->led(this, std::move(expr), rule->binding);
       } else {
         break;
       }
 
       token = lexer_.current();
-      info = parse_rule(token.kind);
+      rule = parse_rule(token.kind);
     }
 
     return expr;
@@ -399,9 +432,9 @@ namespace iris::parser {
     return ast::UnaryOp{token.range, result.value()};
   }
 
-  auto Parser::parse_unary_expr() -> ast::Expr {
+  auto Parser::parse_unary_expr(Binding const min_binding) -> ast::Expr {
     auto const op = parse_unary_op();
-    auto expr = parse_primary_expr();
+    auto expr = parse_expr(min_binding);
 
     auto const range = op.range + ast::range(expr);
     return ast::UnaryExpr{range, op, std::make_unique<ast::Expr>(std::move(expr))};
