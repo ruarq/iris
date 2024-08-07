@@ -5,12 +5,51 @@
 #ifndef IRIS_PARSER_PARSER_HPP
 #define IRIS_PARSER_PARSER_HPP
 
+#include <functional>
 #include <iris/Context.hpp>
 #include <iris/ast/ast.hpp>
 #include <iris/lexer/Lexer.hpp>
 #include <optional>
 
 namespace iris::parser {
+  enum class Binding {
+    Init = 0,
+    Assign,
+    Or,
+    And,
+    Equality,
+    BAnd,
+    BXor,
+    BOr,
+    Comparison,
+    BShift,
+    Term,
+    Factor,
+    Call,
+    MemberSelect,
+    Primary,
+  };
+
+  enum class Associativity {
+    None,
+    Left,
+    Right,
+  };
+
+  class Parser;
+
+  struct ParseRule {
+    using NudFn = std::function<ast::Expr(Parser *)>;
+    // using PrefixFn = std::function<ast::Expr(Parser *)>;
+    using LedFn = std::function<ast::Expr(Parser *, ast::Expr, Binding)>;
+
+    // PrefixFn prefix;
+    NudFn nud;
+    LedFn led;
+    Binding binding;
+    Associativity associativity;
+  };
+
   /**
    * @brief Transforms a stream of tokens into an AST.
    */
@@ -40,10 +79,18 @@ namespace iris::parser {
     [[nodiscard]] auto parse_return_stmt() -> ast::ReturnStmt;
     [[nodiscard]] auto parse_expr_stmt() -> ast::ExprStmt;
 
-    [[nodiscard]] auto parse_expr() -> ast::Expr;
-    [[nodiscard]] auto parse_binary_expr(ast::Expr left, std::size_t precedence = 0) -> ast::Expr;
+    [[nodiscard]] auto parse_expr(Binding min_binding = Binding::Init) -> ast::Expr;
+    [[nodiscard]] auto parse_nud() -> ast::Expr;
+    [[nodiscard]] auto parse_binary_op() -> ast::BinaryOp;
+    [[nodiscard]] auto parse_binary_expr(ast::Expr left, Binding min_binding) -> ast::Expr;
+    [[nodiscard]] auto parse_member_select_expr(ast::Expr value, Binding min_binding) -> ast::Expr;
+    [[nodiscard]] auto parse_assign_expr(ast::Expr target, Binding min_binding) -> ast::Expr;
+    [[nodiscard]] auto parse_call_expr(ast::Expr callee, Binding min_binding) -> ast::Expr;
+    [[nodiscard]] auto parse_args() -> std::vector<ast::Expr>;
+    // [[nodiscard]] auto parse_binary_expr(ast::Expr left, std::size_t precedence = 0) ->
+    // ast::Expr;
     [[nodiscard]] auto parse_unary_op() -> ast::UnaryOp;
-    [[nodiscard]] auto parse_unary_expr() -> ast::UnaryExpr;
+    [[nodiscard]] auto parse_unary_expr() -> ast::Expr;
     [[nodiscard]] auto parse_primary_expr() -> ast::Expr;
     [[nodiscard]] auto parse_value_expr() -> ast::ValueExpr;
     [[nodiscard]] auto parse_name_expr() -> ast::NameExpr;

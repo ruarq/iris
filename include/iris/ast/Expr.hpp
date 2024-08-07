@@ -17,12 +17,15 @@ namespace iris::ast {
   struct ValueExpr;
   struct StructValueExpr;
   struct NameExpr;
+  struct MemberSelectExpr;
   struct CallExpr;
+  struct AssignExpr;
 
   /**
    * @brief Represents an expression in the ast.
    */
-  using Expr = std::variant<ValueExpr, NameExpr, UnaryExpr, BinaryExpr, StructValueExpr, CallExpr>;
+  using Expr = std::variant<ValueExpr, NameExpr, UnaryExpr, BinaryExpr, StructValueExpr,
+                            MemberSelectExpr, CallExpr, AssignExpr>;
   using ExprPtr = std::unique_ptr<Expr>;
 
   /**
@@ -79,18 +82,6 @@ namespace iris::ast {
    * @brief Describes the kind of a binary operation.
    */
   enum class BinaryOpKind {
-    Call,          ///< Function call ( fn(args) )
-    MemberSelect,  ///< Dot operator/member select (.)
-
-    /* ASSIGNMENT */
-
-    Assign,     ///< Assignment (=)
-    AssignAdd,  ///< Add assignment (+=)
-    AssignSub,  ///< Sub assignment (-=)
-    AssignMul,  ///< Mul assignment (*=)
-    AssignDiv,  ///< Div assignment (/=)
-    AssignMod,  ///< Mod assignment (%=)
-
     /* ARITHMETIC */
 
     Add,  ///< Addition (+)
@@ -165,7 +156,19 @@ namespace iris::ast {
   struct CallExpr {
     SourceRange range;
     ExprPtr function;
-    std::vector<ExprPtr> args;
+    std::unique_ptr<std::vector<Expr>> args;
+  };
+
+  struct MemberSelectExpr {
+    SourceRange range;
+    ExprPtr value;
+    ExprPtr select;
+  };
+
+  struct AssignExpr {
+    SourceRange range;
+    ExprPtr target;
+    ExprPtr value;
   };
 
   auto range(Expr const &expr) -> SourceRange;
