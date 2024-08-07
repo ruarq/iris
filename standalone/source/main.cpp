@@ -14,6 +14,7 @@ auto main(int const argc, char** argv) -> int {
   for (auto const& filename : result.unmatched()) {
     auto ctx = iris::Context::from(filename);
     dump_tokens(ctx);
+    auto ast = iris::parser::parse(ctx);
   }
 
   return 0;

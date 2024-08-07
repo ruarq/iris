@@ -3,4 +3,8 @@ target_sources(iris
   Expr.hpp
   Identifier.hpp
   ast.hpp
+  Stmt.hpp
+  Decl.hpp
+  Type.hpp
+  Module.hpp
 )

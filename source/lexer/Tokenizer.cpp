@@ -13,6 +13,7 @@ Tokenizer::TokenKindMap const Tokenizer::map_identifier_to_keyword = {
     {"let", TokenKind::Klet},
     {"mut", TokenKind::Kmut},
     {"ret", TokenKind::Kret},
+    {"struct", TokenKind::Kstruct},
 
     /* TYPES */
 
@@ -94,6 +95,8 @@ auto Tokenizer::next() -> Token {
         return read_token(RCurly);
       case ',':
         return read_token(Comma);
+      case '.':
+        return read_token(Dot);
       case ':':
         return read_token(Colon);
 
@@ -241,8 +244,7 @@ auto Tokenizer::next() -> Token {
 
       default:
         // TODO(ruarq): Emit diagnostic message.
-        scanner_.advance();
-        break;
+        return read_token(Unknown);
     }
   }
 

@@ -1,3 +1,5 @@
-fn main(): i32 {
-    ret 0
+import std.fmt
+
+fn main() {
+    std.fmt.print("Hello, iris!\n")
 }

@@ -7,6 +7,7 @@
 
 #include "Context.hpp"
 #include "lexer/Lexer.hpp"
+#include "parser/Parser.hpp"
 
 namespace iris {
   auto dump_tokens(Context &context) -> void;
