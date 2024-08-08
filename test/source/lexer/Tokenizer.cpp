@@ -18,7 +18,7 @@ constexpr static std::string_view code
       "&&||! "                                                   // LOGICAL OPERATORS
       "=+=-=*=/=%=<<=>>=&=&&=|=||=^= "                           // ASSIGNMENT OPERATORS
       "< <===!=>=> "                                             // COMPARISON OPERATORS
-      "fn let mut ret "                                          // KEYWORDS
+      "fn let mut ret struct "                                   // KEYWORDS
       "i8 i16 i32 i64 u8 u16 u32 u64 isz usz f32 f64 str bool "  // TYPES
       "1234 1234.0912049 true false 'a' \"hello, world!\" "      // LITERALS
       "abc main uint hello something "                           // IDENTIFIERS
@@ -84,6 +84,7 @@ constexpr static std::array expected = {
     Klet,
     Kmut,
     Kret,
+    Kstruct,
 
     /* TYPES */
     Ti8,

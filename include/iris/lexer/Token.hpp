@@ -19,6 +19,7 @@ namespace iris::lexer {
     LCurly,    ///< {
     RCurly,    ///< }
     Comma,     ///< ,
+    Dot,       ///< .
     Colon,     ///< :
     // Semicolon,  ///< ;
 
@@ -73,12 +74,17 @@ namespace iris::lexer {
 
     /* KEYWORDS */
 
-    Kfn,   ///< fn
-    Klet,  ///< let
-    Kmut,  ///< mut
-    Kret,  ///< ret
+    Kfn,      ///< fn
+    Klet,     ///< let
+    Kmut,     ///< mut
+    Kret,     ///< ret
+    Kstruct,  ///< struct
+    Kif,      ///< if
+    Kelse,    ///< else
+    Kwhile,   ///< while
 
     /* TYPES */
+
     Ti8,    ///< i8
     Ti16,   ///< i16
     Ti32,   ///< i32
@@ -107,6 +113,8 @@ namespace iris::lexer {
     Identifier,  ///< all kinds of identifiers
     EndOfFile,   ///< end of file
     Unknown,     ///< unknown token
+
+    Count  ///< The amount of tokens existing.
   };
 
   /**

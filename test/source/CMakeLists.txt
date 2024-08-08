@@ -1,4 +1,5 @@
 add_subdirectory(lexer)
+add_subdirectory(parser)
 
 target_sources(iris-test
   PRIVATE

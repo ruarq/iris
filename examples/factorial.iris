@@ -1,0 +1,12 @@
+fn fact(n: u64): u64 {
+    mut res = 1
+    while n > 0 {
+        res = res * n
+        n = n - 1
+    }
+    ret res
+}
+
+fn main(): i32 {
+    ret fact(5)
+}

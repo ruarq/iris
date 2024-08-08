@@ -2,11 +2,18 @@
 // Created by Anton Büttner on 01.08.24.
 //
 
+#include <cassert>
 #include <iris/lexer/Lexer.hpp>
 
 using namespace iris::lexer;
 
-Lexer::Lexer(Tokenizer const &tokenizer) : tokenizer_(tokenizer) {}
+auto Lexer::from(Context& context) -> Lexer {
+  Scanner scanner{context.file.content()};
+  Tokenizer tokenizer{context, scanner};
+  return Lexer{tokenizer};
+}
+
+Lexer::Lexer(Tokenizer const& tokenizer) : tokenizer_(tokenizer) {}
 
 auto Lexer::peek(std::size_t const amount) -> Token {
   if (amount >= buffer_.size()) {
