@@ -29,8 +29,8 @@ namespace iris {
     [[nodiscard]] auto content() const -> std::string_view;
 
   private:
-    std::filesystem::path path_;
-    std::string content_;
+    std::filesystem::path path_;  ///< The path of the file.
+    std::string content_;         ///< The content of the file.
   };
 }  // namespace iris
 

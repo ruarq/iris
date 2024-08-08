@@ -105,8 +105,8 @@ namespace iris::lexer {
     [[nodiscard]] auto range_end() const -> SourceRange;
 
   private:
-    Context &context_;
-    Scanner scanner_;
+    Context &context_;  ///< The context the tokenizer belongs to.
+    Scanner scanner_;   ///< The scanner to scan the source code.
   };
 }  // namespace iris::lexer
 

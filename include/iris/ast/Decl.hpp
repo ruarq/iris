@@ -46,8 +46,8 @@ namespace iris::ast {
    * @note EBNF: function-decl = function-signature block
    */
   struct FunctionDecl {
-    FunctionSignature signature;
-    Block block;
+    FunctionSignature signature;  ///< The signature of the function.
+    Block block;                  ///< The block (body) of the function.
   };
 
   /**
@@ -64,9 +64,10 @@ namespace iris::ast {
    * @note EBNF: struct-decl = 'struct' identifier '{' field-list '}'
    */
   struct StructDecl {
-    SourceRange range;
-    Identifier identifier;
-    std::vector<Field> fields;
+    SourceRange range;          ///< The range of the struct declaration. Only includes the `struct
+                                ///< identifier` part.
+    Identifier identifier;      ///< The name of the struct.
+    std::vector<Field> fields;  ///< The fields of the struct.
   };
 
   [[nodiscard]] auto to_string(Context const &ctx, Decl const &decl) -> std::string;

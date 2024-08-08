@@ -10,10 +10,18 @@
 #include "Decl.hpp"
 
 namespace iris::ast {
+  /**
+   * @brief A module (or translation unit) in the AST.
+   */
   struct Module {
-    std::vector<Decl> decls;
+    std::vector<Decl> decls;  ///< The declarations in this module.
   };
 
+  /**
+   * @brief Convert a module to a string.
+   * @param ctx The context the module belongs to
+   * @param module The module
+   */
   [[nodiscard]] auto to_string(Context const &ctx, Module const &module) -> std::string;
 }  // namespace iris::ast
 

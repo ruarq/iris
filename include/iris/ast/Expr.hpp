@@ -15,7 +15,7 @@ namespace iris::ast {
   struct BinaryExpr;
   struct UnaryExpr;
   struct ValueExpr;
-  struct StructValueExpr;
+  // struct StructValueExpr;
   struct NameExpr;
   struct MemberSelectExpr;
   struct CallExpr;
@@ -24,7 +24,7 @@ namespace iris::ast {
   /**
    * @brief Represents an expression in the ast.
    */
-  using Expr = std::variant<ValueExpr, NameExpr, UnaryExpr, BinaryExpr, StructValueExpr,
+  using Expr = std::variant<ValueExpr, NameExpr, UnaryExpr, BinaryExpr, /* StructValueExpr, */
                             MemberSelectExpr, CallExpr, AssignExpr>;
   using ExprPtr = std::unique_ptr<Expr>;
 
@@ -38,8 +38,8 @@ namespace iris::ast {
    * @note EBNF: identifier
    */
   struct NameExpr {
-    SourceRange range;
-    Identifier identifier;
+    SourceRange range;      ///< The source range of the name expression.
+    Identifier identifier;  ///< The identifier of the name expression.
   };
 
   /**
@@ -47,8 +47,8 @@ namespace iris::ast {
    * @note EBNF: literal
    */
   struct ValueExpr {
-    SourceRange range;
-    Value value;
+    SourceRange range;  ///< The source range of the value expression.
+    Value value;        ///< The value of the value expression.
   };
 
   /**
@@ -64,8 +64,8 @@ namespace iris::ast {
    * @note EBNF: unary-op = '!' | '-' ;
    */
   struct UnaryOp {
-    SourceRange range;
-    UnaryOpKind kind;
+    SourceRange range;  ///< The source range of the unary operator.
+    UnaryOpKind kind;   ///< The kind of the unary operator.
   };
 
   /**
@@ -73,9 +73,9 @@ namespace iris::ast {
    * @note EBNF: unary-expr = unary-op primary-expr ;
    */
   struct UnaryExpr {
-    SourceRange range;
-    UnaryOp op;
-    ExprPtr expr;
+    SourceRange range;  ///< The source range of the unary expression.
+    UnaryOp op;         ///< The operator of the unary expression.
+    ExprPtr expr;       ///< The expression the unary operator is being applied to.
   };
 
   /**
@@ -118,8 +118,8 @@ namespace iris::ast {
    * @note EBNF: binary-op = '+' | '-' | '*' | ... ;
    */
   struct BinaryOp {
-    SourceRange range;
-    BinaryOpKind kind;
+    SourceRange range;  ///< The range of the binary operator.
+    BinaryOpKind kind;  ///< The kind of the binary operator.
   };
 
   /**
@@ -127,20 +127,21 @@ namespace iris::ast {
    * @note EBNF: binary-expr = expr binary-op expr
    */
   struct BinaryExpr {
-    SourceRange range;
-    ExprPtr left;
-    BinaryOp op;
-    ExprPtr right;
+    SourceRange range;  ///< The source range of the binary expression.
+    ExprPtr left;       ///< The left hand side expression of the (infix) binary expression.
+    BinaryOp op;        ///< The operator which is being applied to @a left and @a right.
+    ExprPtr right;      ///< The right hand side expression of the (infix) binary expression.
   };
 
+#if 0
   /**
    * @brief Represents a named arg in a struct value expression.
    * @note EBNF: named-arg = identifier ':' type
    */
   struct NamedArg {
-    SourceRange range;
-    Identifier identifier;
-    ExprPtr expr;
+    SourceRange range; ///< The range of the named argument.
+    Identifier identifier; ///< The identifier of the named argument.
+    ExprPtr expr; ///<
   };
 
   /**
@@ -152,26 +153,53 @@ namespace iris::ast {
     ExprPtr expr;
     std::vector<NamedArg> args;
   };
+#endif
 
+  /**
+   * @brief Represents a call expression in the AST.
+   * @note EBNF: call-expr = expr '(' arg-list `)`
+   */
   struct CallExpr {
-    SourceRange range;
-    ExprPtr function;
-    std::vector<Expr> args;
+    SourceRange range;       ///< The source range of the call expression.
+    ExprPtr function;        ///< The function (expression) being called.
+    std::vector<Expr> args;  ///< The arguments which should be applied to the function.
   };
 
+  /**
+   * @brief Represents a member select (aka the '.' operator) in the AST.
+   * @note EBNF: member-select-expr = expr '.' expr
+   */
   struct MemberSelectExpr {
-    SourceRange range;
-    ExprPtr value;
-    ExprPtr select;
+    SourceRange range;  ///< The source range of the member select expression.
+    ExprPtr value;      ///< The value a member should be selected from.
+    ExprPtr select;     ///< The value which should be selected.
   };
 
+  /**
+   * @brief Represents an assignment expression in the AST.
+   * @note EBNF: assign-expr = expr '=' expr ;
+   */
   struct AssignExpr {
-    SourceRange range;
-    ExprPtr target;
-    ExprPtr value;
+    SourceRange range;  ///< The source range of the assignment.
+    ExprPtr target;  ///< The target of the assignment, i.e. where @a value should be assigned to.
+    ExprPtr value;   ///< The value to be assigned to @a target.
   };
 
+  /**
+   * @brief Get the source range of any expression.
+   * @param expr The expression
+   */
   auto range(Expr const &expr) -> SourceRange;
+
+  /**
+   * @brief Convert an expression to a string.
+   * @note The real question is, if there is a need for this function. Right now, the testing code
+   * for the parser uses it. It feels kind of weird to maintain two different algorithms (see
+   * iris/ast/Dump.hpp) to convert an AST to a string representation. Especially because the
+   * iris/ast/Dump.hpp thing is much better.
+   * @param ctx The context the expression belongs to
+   * @param expr The expression
+   */
   auto to_string(Context const &ctx, Expr const &expr) -> std::string;
 }  // namespace iris::ast
 

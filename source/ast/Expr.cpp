@@ -59,24 +59,21 @@ namespace iris::ast {
               return fmt::format("({}.{})", to_string(ctx, *member.value),
                                  to_string(ctx, *member.select));
             },
-            [&](StructValueExpr const &struct_value) -> std::string {
-              std::string args;
-              if (!struct_value.args.empty()) {
-                auto itr = struct_value.args.begin();
-                args += fmt::format("{}: {}", itr->identifier.string(ctx),
-                                    to_string(ctx, *itr->expr));
-                ++itr;
-                for (; itr != struct_value.args.end(); ++itr) {
-                  args += fmt::format(", {}: {}", itr->identifier.string(ctx),
+            /*
+              [&](StructValueExpr const &struct_value) -> std::string {
+                std::string args;
+                if (!struct_value.args.empty()) {
+                  auto itr = struct_value.args.begin();
+                  args += fmt::format("{}: {}", itr->identifier.string(ctx),
                                       to_string(ctx, *itr->expr));
+                  ++itr;
+                  for (; itr != struct_value.args.end(); ++itr) {
+                    args += fmt::format(", {}: {}", itr->identifier.string(ctx),
+                                        to_string(ctx, *itr->expr));
+                  }
                 }
-              }
-              return fmt::format("{} {{ {} }}", to_string(ctx, *struct_value.expr), args);
-            },
-            [](auto const &) -> std::string {
-              throw std::runtime_error{
-                  "iris::ast::to_string(iris::ast::Expr const &) : not implemented"};
-            },
+                return fmt::format("{} {{ {} }}", to_string(ctx, *struct_value.expr), args);
+              }, */
         },
         expr);
   }

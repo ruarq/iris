@@ -554,6 +554,7 @@ namespace iris::parser {
     return ast::NameExpr{identifier.range, identifier};
   }
 
+#if 0
   auto Parser::parse_struct_value_expr(ast::Expr expr, Binding) -> ast::Expr {
     consume(LCurly);
     auto named_args = parse_named_args();
@@ -583,6 +584,7 @@ namespace iris::parser {
     auto const range = identifier.range + ast::range(expr);
     return ast::NamedArg{range, identifier, std::make_unique<ast::Expr>(std::move(expr))};
   }
+#endif
 
   auto Parser::parse_identifiers() -> std::vector<ast::Identifier> {
     std::vector<ast::Identifier> identifiers;
