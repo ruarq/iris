@@ -31,7 +31,7 @@ namespace iris::ast {
   /**
    * @brief Represents a constant value.
    */
-  using Value = std::variant<std::int64_t, std::uint64_t, long double, bool, std::string, char>;
+  using Value = std::variant<std::uint64_t, long double, bool, std::string, char>;
 
   /**
    * @brief Represents a identifier/hame expression in the ast.
@@ -145,18 +145,18 @@ namespace iris::ast {
 
   /**
    * @brief Represents a struct value expression in the ast.
-   * @note EBNF: struct-value-expr = identifier '{' named-arg-list '}' ;
+   * @note EBNF: struct-value-expr = expr '{' named-arg-list '}' ;
    */
   struct StructValueExpr {
     SourceRange range;
-    Identifier identifier;
+    ExprPtr expr;
     std::vector<NamedArg> args;
   };
 
   struct CallExpr {
     SourceRange range;
     ExprPtr function;
-    std::unique_ptr<std::vector<Expr>> args;
+    std::vector<Expr> args;
   };
 
   struct MemberSelectExpr {
@@ -172,6 +172,7 @@ namespace iris::ast {
   };
 
   auto range(Expr const &expr) -> SourceRange;
+  auto to_string(Context const &ctx, Expr const &expr) -> std::string;
 }  // namespace iris::ast
 
 #endif  // IRIS_AST_EXPR_HPP

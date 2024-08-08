@@ -20,56 +20,71 @@ namespace iris::parser {
     // TODO(ruarq): Put this in a lookup table.
     static std::unordered_map<lexer::TokenKind, ParseRule> map{
         {Identifier,
-         ParseRule{std::nullopt, &Parser::parse_primary_expr, nullptr, Binding::Primary, None}},
+         ParseRule{std::nullopt, &Parser::parse_primary_expr, nullptr, {}, Binding::Primary, None}},
         {Lbool,
-         ParseRule{std::nullopt, &Parser::parse_primary_expr, nullptr, Binding::Primary, None}},
+         ParseRule{std::nullopt, &Parser::parse_primary_expr, nullptr, {}, Binding::Primary, None}},
         {Lchar,
-         ParseRule{std::nullopt, &Parser::parse_primary_expr, nullptr, Binding::Primary, None}},
+         ParseRule{std::nullopt, &Parser::parse_primary_expr, nullptr, {}, Binding::Primary, None}},
         {Lint,
-         ParseRule{std::nullopt, &Parser::parse_primary_expr, nullptr, Binding::Primary, None}},
+         ParseRule{std::nullopt, &Parser::parse_primary_expr, nullptr, {}, Binding::Primary, None}},
         {Lfloat,
-         ParseRule{std::nullopt, &Parser::parse_primary_expr, nullptr, Binding::Primary, None}},
+         ParseRule{std::nullopt, &Parser::parse_primary_expr, nullptr, {}, Binding::Primary, None}},
         {Lstr,
-         ParseRule{std::nullopt, &Parser::parse_primary_expr, nullptr, Binding::Primary, None}},
-        {Plus, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::Term, Left}},
+         ParseRule{std::nullopt, &Parser::parse_primary_expr, nullptr, {}, Binding::Primary, None}},
+        {Plus, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, ast::BinaryOpKind::Add,
+                         Binding::Term, Left}},
         {Dash, ParseRule{ParseRule::Prefix{&Parser::parse_unary_expr, Binding::Unary}, nullptr,
-                         &Parser::parse_binary_expr, Binding::Term, Left}},
-        {Asterisk,
-         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::Factor, Left}},
-        {Slash,
-         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::Factor, Left}},
-        {Percent,
-         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::Factor, Left}},
-        {Dot, ParseRule{std::nullopt, nullptr, &Parser::parse_member_select_expr,
-                        Binding::MemberSelect, Left}},
-        {LParen, ParseRule{std::nullopt, nullptr, &Parser::parse_call_expr, Binding::Call, Left}},
-        {BarBar, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::Or, Left}},
-        {AmpersandAmpersand,
-         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::And, Left}},
-        {EqualEqual,
-         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::Equality, Left}},
-        {ExclamEqual,
-         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::Equality, Left}},
-        {Ampersand,
-         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::BAnd, Left}},
-        {Bar, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::BOr, Left}},
-        {Caret, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::BXor, Left}},
-        {LAngle,
-         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::Comparison, Left}},
-        {RAngle,
-         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::Comparison, Left}},
-        {LAngleEqual,
-         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::Comparison, Left}},
-        {RAngleEqual,
-         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::Comparison, Left}},
-        {LAngleLAngle,
-         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::BShift, Left}},
-        {RAngleRAngle,
-         ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, Binding::BShift, Left}},
+                         &Parser::parse_binary_expr, ast::BinaryOpKind::Sub, Binding::Term, Left}},
+        {Asterisk, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr,
+                             ast::BinaryOpKind::Mul, Binding::Factor, Left}},
+        {Slash, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, ast::BinaryOpKind::Div,
+                          Binding::Factor, Left}},
+        {Percent, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr,
+                            ast::BinaryOpKind::Mod, Binding::Factor, Left}},
+        {Dot, ParseRule{std::nullopt,
+                        nullptr,
+                        &Parser::parse_member_select_expr,
+                        {},
+                        Binding::MemberSelect,
+                        Left}},
+        {LParen,
+         ParseRule{std::nullopt, nullptr, &Parser::parse_call_expr, {}, Binding::Call, Left}},
+        {BarBar, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, ast::BinaryOpKind::Or,
+                           Binding::Or, Left}},
+        {AmpersandAmpersand, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr,
+                                       ast::BinaryOpKind::And, Binding::And, Left}},
+        {EqualEqual, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr,
+                               ast::BinaryOpKind::Eq, Binding::Equality, Left}},
+        {ExclamEqual, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr,
+                                ast::BinaryOpKind::NEq, Binding::Equality, Left}},
+        {Ampersand, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr,
+                              ast::BinaryOpKind::BAnd, Binding::BAnd, Left}},
+        {Bar, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, ast::BinaryOpKind::BOr,
+                        Binding::BOr, Left}},
+        {Caret, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr,
+                          ast::BinaryOpKind::BXor, Binding::BXor, Left}},
+        {LAngle, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, ast::BinaryOpKind::Lt,
+                           Binding::Comparison, Left}},
+        {RAngle, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr, ast::BinaryOpKind::Gt,
+                           Binding::Comparison, Left}},
+        {LAngleEqual, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr,
+                                ast::BinaryOpKind::LEq, Binding::Comparison, Left}},
+        {RAngleEqual, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr,
+                                ast::BinaryOpKind::GEq, Binding::Comparison, Left}},
+        {LAngleLAngle, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr,
+                                 ast::BinaryOpKind::BLs, Binding::BShift, Left}},
+        {RAngleRAngle, ParseRule{std::nullopt, nullptr, &Parser::parse_binary_expr,
+                                 ast::BinaryOpKind::BRs, Binding::BShift, Left}},
         {Equal,
-         ParseRule{std::nullopt, nullptr, &Parser::parse_assign_expr, Binding::Assign, Right}},
-        {Exclam, ParseRule{ParseRule::Prefix{&Parser::parse_unary_expr, Binding::Unary}, nullptr,
-                           nullptr, Binding::Primary, None}},
+         ParseRule{std::nullopt, nullptr, &Parser::parse_assign_expr, {}, Binding::Assign, Right}},
+        {Exclam, ParseRule{ParseRule::Prefix{&Parser::parse_unary_expr, Binding::Unary},
+                           nullptr,
+                           nullptr,
+                           {},
+                           Binding::Primary,
+                           None}},
+        // {LCurly,
+        // ParseRule{std::nullopt, nullptr, &Parser::parse_struct_value_expr, Binding::Call, Left}},
     };
 
     if (map.contains(kind)) {
@@ -99,6 +114,7 @@ namespace iris::parser {
       case Lchar:
       case Lfloat:
       case Lint:
+      case Lstr:
       case Exclam:
       case Dash:
         return true;
@@ -112,6 +128,8 @@ namespace iris::parser {
       case Klet:
       case Kmut:
       case Kret:
+      case Kif:
+      case Kwhile:
         return true;
       default:
         return is_expr(kind);
@@ -197,7 +215,7 @@ namespace iris::parser {
     auto params = parse_params();
     auto const range = token.range + consume(RParen).range;
 
-    ast::Type type = ast::BasicType{ast::BasicTypeKind::Unit};
+    std::optional<ast::TypeNode> type = std::nullopt;
     if (match(Colon)) {
       lexer_.consume();
       type = parse_type();
@@ -240,14 +258,17 @@ namespace iris::parser {
   }
 
   auto Parser::parse_stmt() -> ast::Stmt {
-    auto const token = lexer_.current();
-    switch (token.kind) {
+    switch (auto const token = lexer_.current(); token.kind) {
       case Klet:
         return parse_let_stmt();
       case Kmut:
         return parse_mut_stmt();
       case Kret:
         return parse_return_stmt();
+      case Kif:
+        return parse_if_else_stmt();
+      case Kwhile:
+        return parse_while_stmt();
       default:
         break;
     }
@@ -280,6 +301,37 @@ namespace iris::parser {
   }
 
   auto Parser::parse_expr_stmt() -> ast::ExprStmt { return ast::ExprStmt{parse_expr()}; }
+
+  auto Parser::parse_if_else_stmt() -> ast::IfElseStmt {
+    auto if_body = parse_if_body();
+    std::optional<ast::ElseBody> else_body = std::nullopt;
+    if (match(Kelse)) {
+      else_body = parse_else_body();
+    }
+    return ast::IfElseStmt{std::move(if_body), std::move(else_body)};
+  }
+
+  auto Parser::parse_if_body() -> ast::IfBody {
+    auto const token = consume(Kif);
+    auto condition = parse_expr();
+    auto block = parse_block();
+    auto const range = token.range + ast::range(condition);
+    return ast::IfBody{range, std::move(condition), std::move(block)};
+  }
+
+  auto Parser::parse_else_body() -> ast::ElseBody {
+    auto const token = consume(Kelse);
+    auto block = parse_block();
+    return ast::ElseBody{token.range, std::move(block)};
+  }
+
+  auto Parser::parse_while_stmt() -> ast::WhileStmt {
+    auto const token = consume(Kwhile);
+    auto condition = parse_expr();
+    auto block = parse_block();
+    auto const range = token.range + ast::range(condition);
+    return ast::WhileStmt{range, std::move(condition), std::move(block)};
+  }
 
   auto Parser::parse_expr(Binding min_binding) -> ast::Expr {
     auto token = lexer_.current();
@@ -329,7 +381,7 @@ namespace iris::parser {
       error(token.range, "expected binary operator");
     }
 
-    ast::BinaryOp const op{token.range, ast::BinaryOpKind::Add};
+    ast::BinaryOp const op{token.range, rule->bop};
 
     lexer_.consume();
     auto right = parse_expr(rule->binding);
@@ -362,8 +414,7 @@ namespace iris::parser {
     auto args = parse_args();
     auto const last = consume(RParen);
     auto const range = ast::range(callee) + last.range;
-    return ast::CallExpr{range, std::make_unique<ast::Expr>(std::move(callee)),
-                         std::make_unique<std::vector<ast::Expr>>(std::move(args))};
+    return ast::CallExpr{range, std::make_unique<ast::Expr>(std::move(callee)), std::move(args)};
   }
 
   auto Parser::parse_args() -> std::vector<ast::Expr> {
@@ -450,9 +501,6 @@ namespace iris::parser {
         return parse_value_expr();
 
       case Identifier:
-        if (match_seq(Identifier, LCurly)) {
-          return parse_struct_value_expr();
-        }
         return parse_name_expr();
 
       default:
@@ -467,7 +515,7 @@ namespace iris::parser {
 
     switch (token.kind) {
       case Lint: {
-        std::int64_t int_value = 0;
+        std::uint64_t int_value = 0;
         std::from_chars(literal.begin(), literal.end(), int_value);
         value = int_value;
         break;
@@ -506,12 +554,12 @@ namespace iris::parser {
     return ast::NameExpr{identifier.range, identifier};
   }
 
-  auto Parser::parse_struct_value_expr() -> ast::StructValueExpr {
-    auto const identifier = parse_identifier();
+  auto Parser::parse_struct_value_expr(ast::Expr expr, Binding) -> ast::Expr {
     consume(LCurly);
     auto named_args = parse_named_args();
-    auto const range = identifier.range + consume(RCurly).range;
-    return ast::StructValueExpr{range, identifier, std::move(named_args)};
+    auto const range = ast::range(expr) + consume(RCurly).range;
+    return ast::StructValueExpr{range, std::make_unique<ast::Expr>(std::move(expr)),
+                                std::move(named_args)};
   }
 
   auto Parser::parse_named_args() -> std::vector<ast::NamedArg> {
@@ -559,11 +607,11 @@ namespace iris::parser {
     return ast::Identifier{token.range, id};
   }
 
-  auto Parser::parse_type() -> ast::Type {
+  auto Parser::parse_type() -> ast::TypeNode {
     using enum ast::BasicTypeKind;
     auto make_type = [this](auto kind) {
-      lexer_.consume();
-      return ast::BasicType{kind};
+      auto const token = lexer_.consume();
+      return ast::TypeNode{token.range, ast::BasicType{kind}};
     };
 
     switch (auto const token = lexer_.current(); token.kind) {
@@ -604,21 +652,23 @@ namespace iris::parser {
     }
   }
 
-  auto Parser::parse_name_type() -> ast::NameType {
+  auto Parser::parse_name_type() -> ast::TypeNode {
     auto const identifier = parse_identifier();
-    return ast::NameType{identifier};
+    return ast::TypeNode{identifier.range, ast::NameType{identifier}};
   }
 
-  auto Parser::parse_array_type() -> ast::ArrayType {
-    consume(LBracket);
-    auto element_type = parse_type();
+  auto Parser::parse_array_type() -> ast::TypeNode {
+    auto const first = consume(LBracket);
+    auto [_, type] = parse_type();
     consume(Comma);
     auto const token = consume(Lint);
     auto const literal = token.literal(ctx_);
     std::size_t element_count = 0;
     std::from_chars(literal.begin(), literal.end(), element_count);
-    consume(RBracket);
-    return ast::ArrayType{std::make_unique<ast::Type>(std::move(element_type)), element_count};
+    auto const last = consume(RBracket);
+    auto const range = first.range + last.range;
+    return ast::TypeNode{
+        range, ast::ArrayType{std::make_unique<ast::Type>(std::move(type)), element_count}};
   }
 
   auto Parser::consume(lexer::TokenKind const kind) -> lexer::Token {

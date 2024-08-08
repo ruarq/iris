@@ -46,6 +46,16 @@ namespace iris::ast {
     TypePtr element_type;
     std::size_t element_count;
   };
+
+  struct TypeNode {
+    SourceRange range;
+    Type type;
+  };
+
+  [[nodiscard]] inline auto to_string(Context const &ctx, TypeNode const &type)
+      -> std::string_view {
+    return type.range.literal(ctx);
+  }
 }  // namespace iris::ast
 
 #endif  // IRIS_AST_TYPE_HPP

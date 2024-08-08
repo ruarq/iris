@@ -13,6 +13,8 @@ namespace iris::ast {
   struct Module {
     std::vector<Decl> decls;
   };
+
+  [[nodiscard]] auto to_string(Context const &ctx, Module const &module) -> std::string;
 }  // namespace iris::ast
 
 #endif  // IRIS_AST_MODULE_HPP

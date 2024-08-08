@@ -7,4 +7,5 @@ target_sources(iris
   Decl.hpp
   Type.hpp
   Module.hpp
+  Dump.hpp
 )

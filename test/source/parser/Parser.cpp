@@ -10,45 +10,6 @@
 using namespace iris;
 using namespace iris::parser;
 
-auto to_string(Context const &ctx, ast::Expr const &expr) -> std::string {
-  return std::visit(
-      Overloaded{
-          [&](ast::BinaryExpr const &binary) {
-            return "(" + to_string(ctx, *binary.left) + " "
-                   + std::string{binary.op.range.literal(ctx)} + " " + to_string(ctx, *binary.right)
-                   + ")";
-          },
-          [&](ast::UnaryExpr const &unary) {
-            return "(" + std::string{unary.op.range.literal(ctx)} + to_string(ctx, *unary.expr)
-                   + ")";
-          },
-          [&](ast::NameExpr const &name) { return std::string{name.identifier.string(ctx)}; },
-          [&](ast::ValueExpr const &value) { return std::string{value.range.literal(ctx)}; },
-          [&](ast::AssignExpr const &assign) {
-            return "(" + to_string(ctx, *assign.target) + " = " + to_string(ctx, *assign.value)
-                   + ")";
-          },
-          [&](ast::MemberSelectExpr const &member) {
-            return "(" + to_string(ctx, *member.value) + "." + to_string(ctx, *member.select) + ")";
-          },
-          [&](ast::CallExpr const &call) {
-            std::string args;
-            if (call.args && !call.args->empty()) {
-              auto itr = call.args->begin();
-              args += to_string(ctx, *itr);
-              ++itr;
-              while (itr != call.args->end()) {
-                args += ", " + to_string(ctx, *itr);
-                ++itr;
-              }
-            }
-            return to_string(ctx, *call.function) + "(" + args + ")";
-          },
-          [](auto const &) -> std::string { return "NOT IMPLEMENTED"; },
-      },
-      expr);
-}
-
 auto test_parser(std::string expr, std::string_view const expected) -> void {
   Context context{File{"/DUMMY/PATH", std::move(expr)}};
   Parser parser{context};
@@ -109,7 +70,7 @@ TEST_SUITE("Parser") {
 
   TEST_CASE("equality operators") {
     test_parser("1 == 2", "(1 == 2)");
-    test_parser("1234 != 1234.1234", "(1234 != 1234.1234)");
+    test_parser("a != b", "(a != b)");
   }
 
   TEST_CASE("logical operators") {
@@ -176,12 +137,12 @@ TEST_SUITE("Parser") {
 
   TEST_CASE("precedence") {
     // MemberSelect > Call
-    test_parser("a.b(c)", "(a.b)(c)");
-    test_parser("a(b.c)", "a((b.c))");
+    test_parser("a.b(c)", "((a.b)(c))");
+    test_parser("a(b.c)", "(a((b.c)))");
 
     // Call > Factor
-    test_parser("a * b(c)", "(a * b(c))");
-    test_parser("a(b * c)", "a((b * c))");
+    test_parser("a * b(c)", "(a * (b(c)))");
+    test_parser("a(b * c)", "(a((b * c)))");
 
     prec_eq("*", "/");
     prec_eq("/", "%");
@@ -226,34 +187,9 @@ TEST_SUITE("Parser") {
   TEST_CASE("unary operators") {
     test_parser("-a", "(-a)");
     test_parser("!a", "(!a)");
-    // test_parser("!!a", "(!(!a))");
+    test_parser("!!a", "(!(!a))");
     test_parser("!a.b", "(!(a.b))");
   }
-}
-
-auto to_string(Context const &ctx, ast::Stmt const &stmt) -> std::string {
-  return std::visit(
-      Overloaded{[&](ast::LetStmt const &let) {
-                   return "let " + std::string{let.identifier.string(ctx)} + " = "
-                          + to_string(ctx, let.expr);
-                 },
-                 [&](ast::MutStmt const &mut) {
-                   return "mut " + std::string{mut.identifier.string(ctx)} + " = "
-                          + to_string(ctx, mut.expr);
-                 },
-                 [&](ast::ReturnStmt const &ret) { return "ret " + to_string(ctx, ret.expr); },
-                 [&](ast::ExprStmt const &expr) { return to_string(ctx, expr.expr); },
-
-                 [](auto const &) -> std::string { return "NOT IMPLEMENTED"; }},
-      stmt);
-}
-
-auto to_string(Context const &ctx, ast::Block const &block) -> std::string {
-  std::string stmts;
-  for (auto const &stmt : block) {
-    stmts += to_string(ctx, stmt) + "\n";
-  }
-  return "{\n" + stmts + "}";
 }
 
 TEST_CASE("parse_block") {
@@ -261,5 +197,5 @@ TEST_CASE("parse_block") {
   Parser parser{context};
   auto ast = parser.parse_block();
   CHECK_EQ(to_string(context, ast),
-           "{\nlet a = 10\nmut b = (10 + 20)\n(a = ((a + b) + 10))\nret (a + b)\n}");
+           "{let a = 10 mut b = (10 + 20) (a = ((a + b) + 10)) ret (a + b)}");
 }

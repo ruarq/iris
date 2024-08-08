@@ -5,6 +5,8 @@
 #ifndef IRIS_UTIL_HPP
 #define IRIS_UTIL_HPP
 
+#include <span>
+
 namespace iris {
   // https://en.cppreference.com/w/cpp/utility/variant/visit
   // helper type for the visitor #4

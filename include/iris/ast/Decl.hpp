@@ -27,7 +27,7 @@ namespace iris::ast {
    */
   struct Param {
     std::vector<Identifier> identifiers;  ///< The identifiers/parameters
-    Type type;                            ///< The type of the parameters
+    TypeNode type;                        ///< The type of the parameters
   };
 
   /**
@@ -35,10 +35,10 @@ namespace iris::ast {
    * @note EBNF: function-signature = 'fn' identifier '(' param-list ')' [':' type]? ;
    */
   struct FunctionSignature {
-    SourceRange range;          ///< The source range of the function signature.
-    Identifier identifier;      ///< The identifier of the function.
-    std::vector<Param> params;  ///< The parameters of the function.
-    Type type;                  ///< The return type of the function.
+    SourceRange range;             ///< The source range of the function signature.
+    Identifier identifier;         ///< The identifier of the function.
+    std::vector<Param> params;     ///< The parameters of the function.
+    std::optional<TypeNode> type;  ///< The return type of the function.
   };
 
   /**
@@ -56,7 +56,7 @@ namespace iris::ast {
    */
   struct Field {
     std::vector<Identifier> identifiers;  ///< The identifiers of the fields.
-    Type type;                            ///< The type of the fields.
+    TypeNode type;                        ///< The type of the fields.
   };
 
   /**
@@ -68,6 +68,8 @@ namespace iris::ast {
     Identifier identifier;
     std::vector<Field> fields;
   };
+
+  [[nodiscard]] auto to_string(Context const &ctx, Decl const &decl) -> std::string;
 }  // namespace iris::ast
 
 #endif  // IRIS_AST_DECL_HPP

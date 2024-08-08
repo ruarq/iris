@@ -79,6 +79,9 @@ namespace iris::lexer {
     Kmut,     ///< mut
     Kret,     ///< ret
     Kstruct,  ///< struct
+    Kif,      ///< if
+    Kelse,    ///< else
+    Kwhile,   ///< while
 
     /* TYPES */
 

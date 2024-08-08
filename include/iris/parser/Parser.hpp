@@ -52,6 +52,7 @@ namespace iris::parser {
     std::optional<Prefix> prefix;
     NudFn nud;
     LedFn led;
+    ast::BinaryOpKind bop;
     Binding binding;
     Associativity associativity;
   };
@@ -84,6 +85,10 @@ namespace iris::parser {
     [[nodiscard]] auto parse_mut_stmt() -> ast::MutStmt;
     [[nodiscard]] auto parse_return_stmt() -> ast::ReturnStmt;
     [[nodiscard]] auto parse_expr_stmt() -> ast::ExprStmt;
+    [[nodiscard]] auto parse_if_else_stmt() -> ast::IfElseStmt;
+    [[nodiscard]] auto parse_if_body() -> ast::IfBody;
+    [[nodiscard]] auto parse_else_body() -> ast::ElseBody;
+    [[nodiscard]] auto parse_while_stmt() -> ast::WhileStmt;
 
     [[nodiscard]] auto parse_expr(Binding min_binding = Binding::Init) -> ast::Expr;
     [[nodiscard]] auto parse_nud() -> ast::Expr;
@@ -100,7 +105,7 @@ namespace iris::parser {
     [[nodiscard]] auto parse_primary_expr() -> ast::Expr;
     [[nodiscard]] auto parse_value_expr() -> ast::ValueExpr;
     [[nodiscard]] auto parse_name_expr() -> ast::NameExpr;
-    [[nodiscard]] auto parse_struct_value_expr() -> ast::StructValueExpr;
+    [[nodiscard]] auto parse_struct_value_expr(ast::Expr expr, Binding min_binding) -> ast::Expr;
     [[nodiscard]] auto parse_named_args() -> std::vector<ast::NamedArg>;
     [[nodiscard]] auto parse_named_arg() -> ast::NamedArg;
 
@@ -111,9 +116,9 @@ namespace iris::parser {
      */
     [[nodiscard]] auto parse_identifiers() -> std::vector<ast::Identifier>;
     [[nodiscard]] auto parse_identifier() -> ast::Identifier;
-    [[nodiscard]] auto parse_type() -> ast::Type;
-    [[nodiscard]] auto parse_name_type() -> ast::NameType;
-    [[nodiscard]] auto parse_array_type() -> ast::ArrayType;
+    [[nodiscard]] auto parse_type() -> ast::TypeNode;
+    [[nodiscard]] auto parse_name_type() -> ast::TypeNode;
+    [[nodiscard]] auto parse_array_type() -> ast::TypeNode;
 
   private:
     auto consume(lexer::TokenKind kind) -> lexer::Token;

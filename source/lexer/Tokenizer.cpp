@@ -14,6 +14,9 @@ Tokenizer::TokenKindMap const Tokenizer::map_identifier_to_keyword = {
     {"mut", TokenKind::Kmut},
     {"ret", TokenKind::Kret},
     {"struct", TokenKind::Kstruct},
+    {"if", TokenKind::Kif},
+    {"else", TokenKind::Kelse},
+    {"while", TokenKind::Kwhile},
 
     /* TYPES */
 
@@ -67,11 +70,21 @@ auto Tokenizer::next() -> Token {
     }
 
     switch (current) {
+        /* WHITESPACE */
+
       case ' ':
       case '\t':
       case '\n':
       case '\r':
         scanner_.advance();
+        break;
+
+      /* COMMENTS */
+      case '#':
+        while (scanner_.current() != '\n') {
+          scanner_.advance();
+        }
+        scanner_.advance();  // Skip the newline
         break;
 
       case '\'':

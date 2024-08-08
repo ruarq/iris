@@ -3,5 +3,8 @@ target_sources(iris
   Identifier.cpp
   Expr.cpp
   Stmt.cpp
+  Decl.cpp
+  Dump.cpp
+  Module.cpp
 )
 
